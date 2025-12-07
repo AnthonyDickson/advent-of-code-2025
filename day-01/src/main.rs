@@ -26,8 +26,39 @@ fn solve_part_one(input: &str) -> i64 {
     times_pointing_at_zero
 }
 
-fn solve_part_two(_input: &str) -> i64 {
-    return 0;
+fn solve_part_two(input: &str) -> u64 {
+    let mut times_pointing_at_zero = 0;
+    let mut current_angle = 50;
+    println!("The dial starts by pointing at {current_angle}");
+
+    for line in input.lines() {
+        let angle = parse_angle(line);
+
+        let times_passing_zero = count_times_passed_zero(current_angle, angle);
+        times_pointing_at_zero += times_passing_zero;
+
+        current_angle = (current_angle + angle) % 100;
+        if current_angle < 0 {
+            current_angle += 100
+        }
+
+        if current_angle == 0 {
+            times_pointing_at_zero += 1;
+        }
+
+        print!("The dial is rotated {line} to point at {current_angle}");
+
+        if times_passing_zero > 0 {
+            println!("; during it's rotation it passed zero {times_passing_zero} times.");
+        } else {
+            println!(".");
+        }
+        println!("{times_pointing_at_zero}")
+    }
+
+    println!("");
+
+    times_pointing_at_zero
 }
 
 fn parse_angle(angle_string: &str) -> i64 {
@@ -45,9 +76,41 @@ fn parse_angle(angle_string: &str) -> i64 {
     }
 }
 
+fn count_times_passed_zero(current_angle: i64, delta_angle: i64) -> u64 {
+    let count = if delta_angle < 0 {
+        if current_angle + delta_angle < 0 {
+            let count: u64 = ((current_angle + delta_angle) / 100)
+                .abs()
+                .try_into()
+                .unwrap();
+            count + 1
+        } else {
+            0
+        }
+    } else {
+        ((current_angle + delta_angle) / 100).try_into().unwrap()
+    };
+
+    let starts_on_zero = current_angle == 0;
+    let ends_on_zero = (current_angle + delta_angle) % 100 == 0;
+
+    let count = if count > 0 && starts_on_zero {
+        count - 1
+    } else {
+        count
+    };
+    let count = if count > 0 && ends_on_zero {
+        count - 1
+    } else {
+        count
+    };
+
+    count
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::{parse_angle, solve_part_one, solve_part_two};
+    use crate::{count_times_passed_zero, parse_angle, solve_part_one, solve_part_two};
 
     #[test]
     fn parses_angle() {
@@ -67,7 +130,42 @@ mod tests {
         for (input, expected) in cases {
             let actual = parse_angle(input);
 
-            assert_eq!(actual, expected, "failed on input {input}");
+            assert_eq!(
+                actual, expected,
+                "failed on input {input}, expect {expected} but got {actual}"
+            );
+        }
+    }
+
+    #[test]
+    fn counts_times_passing_zero() {
+        let cases = [
+            (50, -68, 1),
+            (82, -30, 0),
+            (52, 48, 0),
+            (0, -5, 0),
+            (95, 60, 1),
+            (55, -55, 0),
+            (0, -1, 0),
+            (99, -99, 0),
+            (0, 14, 0),
+            (14, -82, 1),
+            (50, 1000, 10),
+            (50, -1000, 10),
+            (58, 808, 8),
+            (0, -988, 9),
+            (0, 100, 0),
+            (0, -100, 0),
+            (0, -988, 9),
+        ];
+
+        for (current_angle, delta_angle, expected) in cases {
+            let actual = count_times_passed_zero(current_angle, delta_angle);
+
+            assert_eq!(
+                actual, expected,
+                "failed for input {current_angle}, {delta_angle}: expected {expected} but got {actual}"
+            )
         }
     }
 
@@ -92,8 +190,17 @@ mod tests {
 
     #[test]
     fn solves_part_two() {
-        let input = "";
-        let expected = 0;
+        let input = "L68\n\
+            L30\n\
+            R48\n\
+            L5\n\
+            R60\n\
+            L55\n\
+            L1\n\
+            L99\n\
+            R14\n\
+            L82\n";
+        let expected = 6;
 
         let actual = solve_part_two(input);
 
