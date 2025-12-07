@@ -66,6 +66,11 @@ pub fn get_invalid_ids_test() {
     #(aoc.Range(565_653, 565_659), []),
     #(aoc.Range(824_824_821, 824_824_827), []),
     #(aoc.Range(2_121_212_118, 2_121_212_124), []),
+    #(aoc.Range(8_123_221_734, 8_123_333_968), [8_123_281_232]),
+    #(aoc.Range(1233, 1772), [1313, 1414, 1515, 1616, 1717]),
+    #(aoc.Range(2, 15), [11]),
+    #(aoc.Range(2, 2), []),
+    #(aoc.Range(668, 1146), [1010, 1111]),
   ]
 
   list.each(cases, fn(case_) {
@@ -95,6 +100,15 @@ pub fn part_one_test() {
   let expected = 1_227_775_554
 
   let actual = aoc.solve_part_one(input)
+
+  assert actual == expected
+}
+
+pub fn count_digits_test() {
+  let input = 8_123_221_734
+  let expected = 10
+
+  let actual = aoc.count_digits(input)
 
   assert actual == expected
 }
