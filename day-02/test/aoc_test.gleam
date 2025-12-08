@@ -1,5 +1,8 @@
 import aoc
+import gleam/int
+import gleam/io
 import gleam/list
+import gleam/string
 import gleeunit
 
 pub fn main() -> Nil {
@@ -76,7 +79,7 @@ pub fn get_invalid_ids_test() {
   list.each(cases, fn(case_) {
     let #(input, expected) = case_
 
-    let actual = aoc.get_invalid_ids(input)
+    let actual = aoc.get_invalid_ids_part_one(input)
 
     assert actual == expected
       as { "failed on input " <> aoc.range_to_string(input) }
@@ -114,8 +117,62 @@ pub fn count_digits_test() {
 }
 
 pub fn part_two_test() {
-  let input = []
-  let solution = aoc.solve_part_two(input)
+  let input = [
+    aoc.Range(11, 22),
+    aoc.Range(95, 115),
+    aoc.Range(998, 1012),
+    aoc.Range(1_188_511_880, 1_188_511_890),
+    aoc.Range(222_220, 222_224),
+    aoc.Range(1_698_522, 1_698_528),
+    aoc.Range(446_443, 446_449),
+    aoc.Range(38_593_856, 38_593_862),
+    aoc.Range(565_653, 565_659),
+    aoc.Range(824_824_821, 824_824_827),
+    aoc.Range(2_121_212_118, 2_121_212_124),
+  ]
+  let expected = 4_174_379_265
 
-  assert solution == 0
+  let actual = aoc.solve_part_two(input)
+
+  assert actual == expected
+}
+
+pub fn get_part_two_invalid_ids_test() {
+  let cases = [
+    #(aoc.Range(11, 22), [11, 22]),
+    #(aoc.Range(95, 115), [99, 111]),
+    #(aoc.Range(998, 1012), [999, 1010]),
+    #(aoc.Range(1_188_511_880, 1_188_511_890), [1_188_511_885]),
+    #(aoc.Range(222_220, 222_224), [222_222]),
+    #(aoc.Range(1_698_522, 1_698_528), []),
+    #(aoc.Range(446_443, 446_449), [446_446]),
+    #(aoc.Range(38_593_856, 38_593_862), [38_593_859]),
+    #(aoc.Range(565_653, 565_659), [565_656]),
+    #(aoc.Range(824_824_821, 824_824_827), [824_824_824]),
+    #(aoc.Range(2_121_212_118, 2_121_212_124), [2_121_212_121]),
+  ]
+
+  list.each(cases, fn(case_) {
+    let #(input, expected) = case_
+
+    let actual = aoc.get_invalid_ids_part_two(input)
+
+    let list_to_string = fn(nums: List(Int)) -> String {
+      let comma_separated_values =
+        nums
+        |> list.map(int.to_string)
+        |> string.join(", ")
+      "[" <> comma_separated_values <> "]"
+    }
+
+    assert actual == expected
+      as {
+        "Failed on input "
+        <> aoc.range_to_string(input)
+        <> ". Expected "
+        <> list_to_string(expected)
+        <> ", got "
+        <> list_to_string(actual)
+      }
+  })
 }

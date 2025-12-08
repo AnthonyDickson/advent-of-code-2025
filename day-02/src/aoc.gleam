@@ -2,7 +2,6 @@ import gleam/float
 import gleam/int
 import gleam/io
 import gleam/list
-import gleam/pair
 import gleam/result
 import gleam/string
 import simplifile
@@ -102,10 +101,7 @@ pub fn get_invalid_ids(range: Range) -> List(Int) {
     _, _ -> #(start_digit_count / 2, end_digit_count / 2)
   }
 
-  list.range(
-    split_num(start, start_split_index),
-    split_num(end, end_split_index),
-  )
+  list.range(take(start, start_split_index), take(end, end_split_index))
   |> list.map(fn(num) {
     num
     |> int.to_string
@@ -117,12 +113,11 @@ pub fn get_invalid_ids(range: Range) -> List(Int) {
   |> list.filter(fn(x) { x >= start && x <= end })
 }
 
-fn split_num(num, index) -> Int {
+fn take(num, index) -> Int {
   num
   |> int.to_string
   |> string.to_graphemes
-  |> list.split(index)
-  |> pair.first
+  |> list.take(index)
   |> string.join("")
   |> int.parse
   // Since we started with a valid integer, we should never get the default?
@@ -140,11 +135,36 @@ pub fn count_digits(num: Int) -> Int {
   |> result.lazy_unwrap(fn() { num |> int.to_string |> string.length })
 }
 
-pub fn solve_part_two(_ranges: List(Range)) -> Int {
-  // for all substring lengths up to half of the length of the range start to the range end
-  // if substring length % length(start) != 0
-  //   skip
-  // else
-  //   gen all repeating digit sequences from (start[:substring length] as int) to (end[:substring length] as int)
-  0
+pub fn solve_part_two(ranges: List(Range)) -> Int {
+  ranges
+  |> list.flat_map(get_invalid_ids_part_two)
+  |> int.sum
+}
+
+pub fn get_invalid_ids_part_two(range: Range) -> List(Int) {
+  list.range(range.start, range.end)
+  |> list.filter(is_repeating)
+}
+
+fn is_repeating(num: Int) -> Bool {
+  let len = count_digits(num)
+
+  list.range(1, len / 2)
+  |> list.map(fn(substring_length) {
+    num >= 10 && has_repeating_substring(num, len, substring_length)
+  })
+  |> list.fold(False, fn(acc, curr) { acc || curr })
+}
+
+fn has_repeating_substring(num: Int, len: Int, substring_length: Int) -> Bool {
+  case len % substring_length == 0 {
+    False -> False
+    True -> {
+      let num_str = int.to_string(num)
+      let times = len / substring_length
+      num_str
+      == string.slice(num_str, 0, substring_length)
+      |> string.repeat(times)
+    }
+  }
 }
