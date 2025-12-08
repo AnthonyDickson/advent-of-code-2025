@@ -1,8 +1,10 @@
+import gleam/bool
 import gleam/float
 import gleam/int
 import gleam/io
 import gleam/list
 import gleam/result
+import gleam/set
 import gleam/string
 import simplifile
 
@@ -101,31 +103,67 @@ pub fn get_invalid_ids(range: Range) -> List(Int) {
     _, _ -> #(start_digit_count / 2, end_digit_count / 2)
   }
 
-  list.range(take(start, start_split_index), take(end, end_split_index))
-  |> list.map(fn(num) {
-    num
-    |> int.to_string
-    |> string.repeat(2)
-    |> int.parse
-    // Since we started with a valid integer, we should never get the default?
-    |> result.unwrap(0)
-  })
+  list.range(
+    take_digits(start, start_split_index),
+    take_digits(end, end_split_index),
+  )
+  |> list.map(repeat_digits(_, 2))
   |> list.filter(fn(x) { x >= start && x <= end })
 }
 
-fn take(num, index) -> Int {
-  num
-  |> int.to_string
-  |> string.to_graphemes
-  |> list.take(index)
-  |> string.join("")
-  |> int.parse
-  // Since we started with a valid integer, we should never get the default?
-  |> result.unwrap(0)
+pub fn solve_part_two(ranges: List(Range)) -> Int {
+  ranges
+  |> list.flat_map(generate_invalid_ids)
+  |> int.sum
+}
+
+pub fn generate_invalid_ids(range: Range) -> List(Int) {
+  let len = count_digits(range.end)
+  // This should not panic because the base is always positive
+  let assert Ok(step) =
+    float.power(10.0, int.to_float(len / 2)) |> result.map(float.truncate)
+
+  make_range(range.start, range.end, step)
+  |> list.flat_map(gen_seq)
+  |> set.from_list
+  |> set.to_list
+  |> list.filter(fn(num) { range.start <= num && num <= range.end })
+}
+
+fn make_range(start, end, step) -> List(Int) {
+  make_range_aux(start, end, step, [])
+  |> list.reverse
+}
+
+fn make_range_aux(start, end, step, acc) -> List(Int) {
+  use <- bool.guard(start > end, [start, ..acc])
+
+  make_range_aux(start + step, end, step, [start, ..acc])
+}
+
+fn gen_seq(num: Int) -> List(Int) {
+  use <- bool.guard(num < 10, [])
+  let len = count_digits(num)
+
+  list.range(1, len / 2)
+  |> list.filter(fn(subseq_len) { len % subseq_len == 0 })
+  |> list.map(fn(subseq_len) {
+    let times = len / subseq_len
+    let leading_digits = take_digits(num, subseq_len)
+    repeat_digits(leading_digits, times)
+  })
 }
 
 const ln_10 = 2.30258509299
 
+/// Count the digits in a number
+///
+/// # Examples
+///
+/// ```gleam
+/// count_digits(12345)
+/// // -> 5
+/// ```
 pub fn count_digits(num: Int) -> Int {
   float.logarithm(int.to_float(num))
   |> result.try(float.divide(_, ln_10))
@@ -135,36 +173,40 @@ pub fn count_digits(num: Int) -> Int {
   |> result.lazy_unwrap(fn() { num |> int.to_string |> string.length })
 }
 
-pub fn solve_part_two(ranges: List(Range)) -> Int {
-  ranges
-  |> list.flat_map(get_invalid_ids_part_two)
-  |> int.sum
+/// Take the first `n` digits of a number
+///
+/// # Examples
+/// ```gleam
+/// take_digits(12345, 2)
+/// // -> 12
+/// ```
+fn take_digits(num: Int, n: Int) -> Int {
+  let len = count_digits(num)
+  let p = int.max(0, len - n)
+
+  // This should not panic because the base is always positive
+  let assert Ok(right_shift) =
+    float.power(10.0, int.to_float(p))
+    |> result.map(float.truncate)
+
+  num / right_shift
 }
 
-pub fn get_invalid_ids_part_two(range: Range) -> List(Int) {
-  list.range(range.start, range.end)
-  |> list.filter(is_repeating)
-}
-
-fn is_repeating(num: Int) -> Bool {
+/// Repeat a number like a string
+///
+/// # Examples
+/// ```gleam
+/// repeat(123, 3)
+/// // -> 123_123_123
+/// ```
+pub fn repeat_digits(num: Int, times n: Int) -> Int {
+  use <- bool.guard(n < 2, num)
   let len = count_digits(num)
 
-  list.range(1, len / 2)
-  |> list.map(fn(substring_length) {
-    num >= 10 && has_repeating_substring(num, len, substring_length)
-  })
-  |> list.fold(False, fn(acc, curr) { acc || curr })
-}
+  // This should not panic because the base is always positive
+  let assert Ok(left_shift) =
+    float.power(10.0, int.to_float(len * { n - 1 }))
+    |> result.map(float.truncate)
 
-fn has_repeating_substring(num: Int, len: Int, substring_length: Int) -> Bool {
-  case len % substring_length == 0 {
-    False -> False
-    True -> {
-      let num_str = int.to_string(num)
-      let times = len / substring_length
-      num_str
-      == string.slice(num_str, 0, substring_length)
-      |> string.repeat(times)
-    }
-  }
+  num * left_shift + repeat_digits(num, n - 1)
 }

@@ -1,6 +1,5 @@
 import aoc
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/string
 import gleeunit
@@ -79,7 +78,7 @@ pub fn get_invalid_ids_test() {
   list.each(cases, fn(case_) {
     let #(input, expected) = case_
 
-    let actual = aoc.get_invalid_ids_part_one(input)
+    let actual = aoc.get_invalid_ids(input)
 
     assert actual == expected
       as { "failed on input " <> aoc.range_to_string(input) }
@@ -137,7 +136,7 @@ pub fn part_two_test() {
   assert actual == expected
 }
 
-pub fn get_part_two_invalid_ids_test() {
+pub fn generate_invalid_ids_test() {
   let cases = [
     #(aoc.Range(11, 22), [11, 22]),
     #(aoc.Range(95, 115), [99, 111]),
@@ -155,7 +154,7 @@ pub fn get_part_two_invalid_ids_test() {
   list.each(cases, fn(case_) {
     let #(input, expected) = case_
 
-    let actual = aoc.get_invalid_ids_part_two(input)
+    let actual = aoc.generate_invalid_ids(input)
 
     let list_to_string = fn(nums: List(Int)) -> String {
       let comma_separated_values =
@@ -173,6 +172,32 @@ pub fn get_part_two_invalid_ids_test() {
         <> list_to_string(expected)
         <> ", got "
         <> list_to_string(actual)
+      }
+  })
+}
+
+pub fn repeat_digits_test() {
+  let cases = [
+    #(1, 1, 1),
+    #(1, 2, 11),
+    #(1, 3, 111),
+  ]
+
+  list.each(cases, fn(case_) {
+    let #(num, times, expected) = case_
+
+    let actual = aoc.repeat_digits(num, times)
+
+    assert actual == expected
+      as {
+        "Failed on input num="
+        <> int.to_string(num)
+        <> ", times="
+        <> int.to_string(times)
+        <> ", Expected "
+        <> int.to_string(expected)
+        <> ", got "
+        <> int.to_string(actual)
       }
   })
 }
