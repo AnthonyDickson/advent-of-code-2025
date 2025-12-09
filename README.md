@@ -6,14 +6,16 @@ A template with nix flakes and code snippets in multiple languages for getting s
 
 Times are recorded with hyperfine on NixOS 25.05 on an AMD 8700GE.
 All times are the mean time reported by hyperfine rounded to the nearest whole number.
+Peak RAM usage is reported by GNU time and is the max resident set size.
 The "Baseline Time" refers to the template runtime on the inputs, but with no parsing or processing.
 The "Total Time" is the end-to-end runtime of the solution.
 The "Solution Time" is the difference between the baseline and total times and gives a fairer comparison of the just the algorithm runtime between native binaries, VM bytecode and interpreted languages.
 
-| Day (Part) | Language | Baseline Time | Total Time | Solution Time |
-| :--------- | -------- | ------------: | ---------: | ------------: |
-| 1 (Both)   | 🦀 Rust  |        718 µs |     790 µs |         82 µs |
-| 2 (Both)   | ⭐ Gleam |        125 ms |     143 ms |         18 ms |
+| Day (Part) | Language | Baseline Time | Total Time | Solution Time | Peak RAM (KiB) |
+| :--------- | -------- | ------------: | ---------: | ------------: | -------------: |
+| 1 (Both)   | 🦀 Rust  |        718 µs |     790 µs |         82 µs |          2,268 |
+| 2 (Both)   | ⭐ Gleam |    125,000 µs | 143,000 µs |     18,000 µs |         77,272 |
+| 2 (1)      | ⚡ Zig   |        247 µs |     286 µs |         39 µs |            264 |
 
 ## Usage
 
