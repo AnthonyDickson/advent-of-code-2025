@@ -3,62 +3,39 @@ use std::fs;
 fn main() {
     let input = fs::read_to_string("input.txt").unwrap();
 
-    let part_one_solution = solve_part_one(&input);
-    let part_two_solution = solve_part_two(&input);
+    let (part_one_solution, part_two_solution) = solve(&input);
 
     println!("{part_one_solution}");
     println!("{part_two_solution}");
 }
 
-fn solve_part_one(input: &str) -> i64 {
-    let mut times_pointing_at_zero = 0;
+type PartOneSolution = u64;
+type PartTwoSolution = u64;
+
+fn solve(input: &str) -> (PartOneSolution, PartTwoSolution) {
+    let mut part_one = 0;
+    let mut part_two = 0;
     let mut current_angle = 50;
-
-    for line in input.lines() {
-        let angle = parse_angle(line);
-        current_angle = (current_angle + angle) % 100;
-
-        if current_angle == 0 {
-            times_pointing_at_zero += 1;
-        }
-    }
-
-    times_pointing_at_zero
-}
-
-fn solve_part_two(input: &str) -> u64 {
-    let mut times_pointing_at_zero = 0;
-    let mut current_angle = 50;
-    println!("The dial starts by pointing at {current_angle}");
 
     for line in input.lines() {
         let angle = parse_angle(line);
 
         let times_passing_zero = count_times_passed_zero(current_angle, angle);
-        times_pointing_at_zero += times_passing_zero;
+        part_two += times_passing_zero;
 
         current_angle = (current_angle + angle) % 100;
+
         if current_angle < 0 {
             current_angle += 100
         }
 
         if current_angle == 0 {
-            times_pointing_at_zero += 1;
+            part_one += 1;
+            part_two += 1;
         }
-
-        print!("The dial is rotated {line} to point at {current_angle}");
-
-        if times_passing_zero > 0 {
-            println!("; during it's rotation it passed zero {times_passing_zero} times.");
-        } else {
-            println!(".");
-        }
-        println!("{times_pointing_at_zero}")
     }
 
-    println!("");
-
-    times_pointing_at_zero
+    (part_one, part_two)
 }
 
 fn parse_angle(angle_string: &str) -> i64 {
@@ -76,41 +53,32 @@ fn parse_angle(angle_string: &str) -> i64 {
     }
 }
 
-fn count_times_passed_zero(current_angle: i64, delta_angle: i64) -> u64 {
-    let count = if delta_angle < 0 {
-        if current_angle + delta_angle < 0 {
-            let count: u64 = ((current_angle + delta_angle) / 100)
-                .abs()
-                .try_into()
-                .unwrap();
-            count + 1
-        } else {
-            0
-        }
+fn count_times_passed_zero(initial_angle: i64, delta_angle: i64) -> u64 {
+    let times = i64::abs(delta_angle / 100);
+    let remainder = delta_angle % 100;
+    let new_angle = initial_angle + remainder;
+
+    let started_and_finished_on_zero = initial_angle == 0 && new_angle % 100 == 0;
+    let passed_zero_on_remainder = (new_angle < 0 || new_angle > 100) && initial_angle != 0;
+
+    let times = if started_and_finished_on_zero {
+        times - 1
     } else {
-        ((current_angle + delta_angle) / 100).try_into().unwrap()
+        times
     };
 
-    let starts_on_zero = current_angle == 0;
-    let ends_on_zero = (current_angle + delta_angle) % 100 == 0;
-
-    let count = if count > 0 && starts_on_zero {
-        count - 1
+    let times = if passed_zero_on_remainder {
+        times + 1
     } else {
-        count
-    };
-    let count = if count > 0 && ends_on_zero {
-        count - 1
-    } else {
-        count
+        times
     };
 
-    count
+    times as u64
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{count_times_passed_zero, parse_angle, solve_part_one, solve_part_two};
+    use crate::{count_times_passed_zero, parse_angle, solve};
 
     #[test]
     fn parses_angle() {
@@ -183,7 +151,7 @@ mod tests {
             L82\n";
         let expected = 3;
 
-        let actual = solve_part_one(input);
+        let (actual, _) = solve(input);
 
         assert_eq!(actual, expected)
     }
@@ -202,7 +170,7 @@ mod tests {
             L82\n";
         let expected = 6;
 
-        let actual = solve_part_two(input);
+        let (_, actual) = solve(input);
 
         assert_eq!(actual, expected, "failed on input \"{input}\"")
     }
