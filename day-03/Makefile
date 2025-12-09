@@ -6,7 +6,7 @@ test:
 	zig build --watch test
 
 run:
-	zig build --watch run
+	zig build run
 
 build:
 	zig build --release=fast

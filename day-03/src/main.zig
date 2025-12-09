@@ -62,12 +62,50 @@ fn get_max_joltage_pair(battery_bank: []const u8) u64 {
     return left * 10 + right;
 }
 
-fn solve_part_two(input: []const u8) i64 {
-    _ = input; // autofix
-    return 0;
+/// Assumes input is a string matching `[1-9]+`.
+fn get_max_joltage_12(battery_bank: []const u8) u64 {
+    var digits = [12]u8{ '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1' };
+
+    for (battery_bank, 0..) |joltage, i| {
+        const batteries_left = battery_bank.len - i;
+
+        for (0..12) |place| {
+            if (batteries_left >= (12 - place) and joltage > digits[place]) {
+                digits[place] = joltage;
+
+                for (place + 1..12) |j| {
+                    digits[j] = '1';
+                }
+
+                break;
+            }
+        }
+    }
+
+    var joltage: u64 = 0;
+
+    for (digits, 1..) |digit, i| {
+        const digit_as_int = @as(u64, @intCast((digit - '0')));
+        joltage += digit_as_int * std.math.pow(u64, 10, 12 - i);
+    }
+
+    return joltage;
 }
 
-test "test get max joltage" {
+fn solve_part_two(input: []const u8) u64 {
+    var total_joltage: u64 = 0;
+    var lines_iter = std.mem.splitScalar(u8, input, '\n');
+
+    while (lines_iter.next()) |line| {
+        if (line.len == 0) continue;
+
+        total_joltage += get_max_joltage_12(line);
+    }
+
+    return total_joltage;
+}
+
+test "test get max joltage pair" {
     const cases = [_]struct { []const u8, u64 }{
         .{ "987654321111111", 98 },
         .{ "811111111111119", 89 },
@@ -81,7 +119,7 @@ test "test get max joltage" {
         const actual = get_max_joltage_pair(input);
 
         std.testing.expectEqual(expected, actual) catch |err| {
-            std.debug.print("failed on input {s}", .{input});
+            std.debug.print("failed on input {s}\n", .{input});
             return err;
         };
     }
@@ -99,6 +137,26 @@ test "test part one" {
     const actual = solve_part_one(input);
 
     try std.testing.expectEqual(expected, actual);
+}
+
+test "test get max joltage 12" {
+    const cases = [_]struct { []const u8, u64 }{
+        .{ "987654321111111", 987654321111 },
+        .{ "811111111111119", 811111111119 },
+        .{ "234234234234278", 434234234278 },
+        .{ "818181911112111", 888911112111 },
+    };
+
+    for (cases) |case| {
+        const input, const expected = case;
+
+        const actual = get_max_joltage_12(input);
+
+        std.testing.expectEqual(expected, actual) catch |err| {
+            std.debug.print("failed on input {s}\n", .{input});
+            return err;
+        };
+    }
 }
 
 test "test part two" {
