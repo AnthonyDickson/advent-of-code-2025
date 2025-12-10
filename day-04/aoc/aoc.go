@@ -4,6 +4,11 @@ import (
 	"strings"
 )
 
+const (
+	EMPTY      = 0
+	PAPER_ROLL = 1
+)
+
 // / Assumes input matching ([\.@]+\n)+
 func ParseInput(input string) [][]uint8 {
 	lines := strings.Split(strings.Trim(input, "\n "), "\n")
@@ -11,8 +16,8 @@ func ParseInput(input string) [][]uint8 {
 	rows := make([][]uint8, len(lines))
 
 	lookup := [256]uint8{}
-	lookup['.'] = 0
-	lookup['@'] = 1
+	lookup['.'] = EMPTY
+	lookup['@'] = PAPER_ROLL
 
 	for row_i, line := range lines {
 		row := make([]uint8, len(line))
@@ -42,7 +47,7 @@ func SolvePartOne(input string) int {
 
 	for row := range len(grid) {
 		for col := range len(grid[row]) {
-			isPaperRoll := grid[row][col] == 1
+			isPaperRoll := grid[row][col] == PAPER_ROLL
 
 			if isPaperRoll && reachable(grid, row, col, height, width, directions) {
 				reachablePaperRolls += 1
@@ -70,7 +75,7 @@ func reachable(grid [][]uint8, row int, col int, height int, width int, directio
 				continue
 			}
 
-			if grid[y][x] == 1 {
+			if grid[y][x] == PAPER_ROLL {
 				adjacent += 1
 
 				if adjacent == 4 {
@@ -83,6 +88,58 @@ func reachable(grid [][]uint8, row int, col int, height int, width int, directio
 	return true
 }
 
+const MAX_LOOP = 100_000
+
 func SolvePartTwo(input string) int {
-	return 0
+	grid := ParseInput(input)
+
+	if len(grid) == 0 {
+		return 0
+	}
+
+	directions := []int{-1, 0, 1}
+	height := len(grid)
+	width := len(grid[0])
+	removedPaperRollCount := 0
+
+	for range MAX_LOOP {
+		numRemoved := removeReachablePaperRolls(grid, height, width, directions)
+		removedPaperRollCount += numRemoved
+
+		if numRemoved == 0 {
+			break
+		}
+	}
+
+	return removedPaperRollCount
+}
+
+type Coord struct {
+	row int
+	col int
+}
+
+// Removes reachable paper rolls from the grid and returns the number of paper rolls removed.
+// **Note**: Updates grid in-place
+func removeReachablePaperRolls(grid [][]uint8, height int, width int, directions []int) int {
+	reachablePaperRolls := 0
+
+	var updates []Coord
+
+	for row := range len(grid) {
+		for col := range len(grid[row]) {
+			isPaperRoll := grid[row][col] == PAPER_ROLL
+
+			if isPaperRoll && reachable(grid, row, col, height, width, directions) {
+				reachablePaperRolls += 1
+				updates = append(updates, Coord{row, col})
+			}
+		}
+	}
+
+	for _, update := range updates {
+		grid[update.row][update.col] = EMPTY
+	}
+
+	return reachablePaperRolls
 }

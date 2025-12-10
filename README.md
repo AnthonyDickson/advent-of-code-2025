@@ -18,6 +18,7 @@ The "Solution Time" is the difference between the baseline and total times and g
 | 3 (1)      | ⚡ Zig   |        247 µs |     286 µs |         39 µs |            264 |
 | 3 (Both)   | ⚡ Zig   |        251 µs |     460 µs |        209 µs |            264 |
 | 4 (1)      | 🐹 Go    |      1,258 µs |   1,627 µs |        369 µs |          2,176 |
+| 4 (Both)   | 🐹 Go    |      1,267 µs |   8,619 µs |       7532 µs |          2,684 |
 
 ## Usage
 

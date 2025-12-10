@@ -77,8 +77,7 @@ func TestPartTwo(t *testing.T) {
 		input    string
 		expected int
 	}{
-		{"example 1", "test input", 0},
-		// {"example 2", "other input", 42},
+		{"example 1", example_input, 43},
 	}
 
 	for _, tt := range tests {
@@ -89,5 +88,11 @@ func TestPartTwo(t *testing.T) {
 				t.Errorf("failed for %s %q: expected %d, got %d", tt.name, tt.input, tt.expected, actual)
 			}
 		})
+	}
+}
+
+func BenchmarkSolvePartTwo(b *testing.B) {
+	for b.Loop() {
+		aoc.SolvePartTwo(example_input)
 	}
 }
