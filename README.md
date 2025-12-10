@@ -17,6 +17,7 @@ The "Solution Time" is the difference between the baseline and total times and g
 | 2 (Both)   | ⭐ Gleam |    125,000 µs | 143,000 µs |     18,000 µs |         77,272 |
 | 3 (1)      | ⚡ Zig   |        247 µs |     286 µs |         39 µs |            264 |
 | 3 (Both)   | ⚡ Zig   |        251 µs |     460 µs |        209 µs |            264 |
+| 4 (1)      | 🐹 Go    |      1,258 µs |   1,627 µs |        369 µs |          2,176 |
 
 ## Usage
 
