@@ -11,14 +11,15 @@ The "Baseline Time" refers to the template runtime on the inputs, but with no pa
 The "Total Time" is the end-to-end runtime of the solution.
 The "Solution Time" is the difference between the baseline and total times and gives a fairer comparison of the just the algorithm runtime between native binaries, VM bytecode and interpreted languages.
 
-| Day (Part) | Language | Baseline Time | Total Time | Solution Time | Peak RAM (KiB) |
-| :--------- | -------- | ------------: | ---------: | ------------: | -------------: |
-| 1 (Both)   | 🦀 Rust  |        718 µs |     790 µs |         82 µs |          2,268 |
-| 2 (Both)   | ⭐ Gleam |    125,000 µs | 143,000 µs |     18,000 µs |         77,272 |
-| 3 (1)      | ⚡ Zig   |        247 µs |     286 µs |         39 µs |            264 |
-| 3 (Both)   | ⚡ Zig   |        251 µs |     460 µs |        209 µs |            264 |
-| 4 (1)      | 🐹 Go    |      1,258 µs |   1,627 µs |        369 µs |          2,176 |
-| 4 (Both)   | 🐹 Go    |      1,267 µs |   8,619 µs |       7532 µs |          2,684 |
+| Day (Part) | Language  | Baseline Time | Total Time | Solution Time | Peak RAM (KiB) |
+| :--------- | --------- | ------------: | ---------: | ------------: | -------------: |
+| 1 (Both)   | 🦀 Rust   |        718 µs |     790 µs |         82 µs |          2,268 |
+| 2 (Both)   | ⭐ Gleam  |    125,000 µs | 143,000 µs |     18,000 µs |         77,272 |
+| 3 (1)      | ⚡ Zig    |        247 µs |     286 µs |         39 µs |            264 |
+| 3 (Both)   | ⚡ Zig    |        251 µs |     460 µs |        209 µs |            264 |
+| 4 (1)      | 🐹 Go     |      1,258 µs |   1,627 µs |        369 µs |          2,176 |
+| 4 (Both)   | 🐹 Go     |      1,267 µs |   8,619 µs |      7,532 µs |          2,684 |
+| 4 (1)      | λ Haskell |      2,178 µs |   6,570 µs |      4,392 µs |          9,564 |
 
 ## Usage
 
