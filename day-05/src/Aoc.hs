@@ -19,8 +19,7 @@ import Interval qualified as I
 -- ```
 parseInput :: String -> ([I.Interval], [Int])
 parseInput str =
-  -- Need two passes for some reason? There are unmerged intervals.
-  (  I.mergeOverlapping $ I.mergeOverlapping $ sort $ map I.parse intervals,
+  (  I.mergeAll$ sort $ map I.parse intervals,
     -- Have to drop the first "ingredient" since it will be an empty string
     map read (drop 1 ingredients)
   )

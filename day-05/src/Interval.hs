@@ -1,31 +1,10 @@
-module Interval (Interval (..), parse, contains, overlaps, merge, mergeOverlapping, range) where
+module Interval (Interval (..), parse, contains, merge, mergeAll, range) where
 
 data Interval = Interval {start :: Int, end :: Int} deriving (Show, Eq)
 
 instance Ord Interval where
-  compare (Interval start end) (Interval start' end')
-    -- oo
-    -- oo
-    | start == start' && end == end' = EQ
-    -- oo
-    --    oo
-    | end < start' = LT
-    --    oo
-    -- oo
-    | start > end' = GT
-    -- ooo
-    -- oo
-    | start == start' = if end > end' then GT else LT
-    -- ooo
-    --  oo
-    | end == end' = if start < start' then LT else GT
-    -- ooo
-    --   ooo
-    | end == start' = LT
-    --   ooo
-    -- ooo
-    | start == end' = GT
-    | otherwise = EQ
+  compare (Interval start end) (Interval start' end') =
+    compare (start, end) (start', end')
 
 parse :: String -> Interval
 parse str = case split '-' str of
@@ -40,12 +19,9 @@ split delimiter str = case break (== delimiter) str of
 contains :: Interval -> Int -> Bool
 contains interval num = start interval <= num && num <= end interval
 
-overlaps :: Interval -> Interval -> Bool
-overlaps a@(Interval start end) b@(Interval start' end') =
-  contains a start'
-    || contains a end'
-    || contains b start
-    || contains b end
+canMerge :: Interval -> Interval -> Bool
+canMerge (Interval start end) (Interval start' end') =
+  (start <= end' && start' <= end) || end + 1 == start'
 
 -- Assumes intervals are overlapping
 merge :: Interval -> Interval -> Interval
@@ -55,13 +31,13 @@ merge a b =
    in Interval start' end'
 
 -- Assumes the input list is sorted
-mergeOverlapping :: [Interval] -> [Interval]
-mergeOverlapping [] = []
-mergeOverlapping [x] = [x]
-mergeOverlapping (a : b : t) =
-  if overlaps a b
-    then mergeOverlapping (merge a b : t)
-    else a : mergeOverlapping (b : t)
+mergeAll :: [Interval] -> [Interval]
+mergeAll [] = []
+mergeAll [x] = [x]
+mergeAll (a : b : t) =
+  if canMerge a b
+    then mergeAll (merge a b : t)
+    else a : mergeAll (b : t)
 
 range :: Interval -> Int
 -- Need to add one because the intervals are inclusive on both ends
