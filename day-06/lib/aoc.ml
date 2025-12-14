@@ -60,9 +60,14 @@ let parse_operation (m : char list) =
   | c :: _ -> operation_of_char c
 ;;
 
-(** Parses numbers in the `m`atrix from left to right.
-Expects `m` to be the result of [parse_matrix] without transposing. *)
-let parse_problems (m : char_matrix) : problem list =
+type orientation =
+  | Row
+  | Column
+
+(** Parses numbers in the [m]atrix from left to right if [o] is [Row] or top to
+bottom if [o] is [Column]. Expects [m] to be the result of [parse_matrix]
+without transposing. *)
+let parse_problems (o : orientation) (m : char_matrix) : problem list =
   let split_end l =
     match List.rev l with
     | [] -> raise (Invalid_argument "Cannot get last element of an empty list")
@@ -77,7 +82,10 @@ let parse_problems (m : char_matrix) : problem list =
   in
   let parse_problem matrix =
     let number_rows, operation_row = split_end matrix in
-    List.map parse_number number_rows, parse_operation operation_row
+    match o with
+    | Row -> List.map parse_number number_rows, parse_operation operation_row
+    | Column ->
+      List.map parse_number (transpose_matrix number_rows), parse_operation operation_row
   and matrices = split_at_empty_column m in
   List.map parse_problem matrices
 ;;
@@ -89,7 +97,17 @@ let solve_problem (p : problem) : int =
 ;;
 
 let solve_part_one s =
-  s |> parse_matrix |> parse_problems |> List.map solve_problem |> List.fold_left ( + ) 0
+  s
+  |> parse_matrix
+  |> parse_problems Row
+  |> List.map solve_problem
+  |> List.fold_left ( + ) 0
 ;;
 
-let solve_part_two _s = 0
+let solve_part_two s =
+  s
+  |> parse_matrix
+  |> parse_problems Column
+  |> List.map solve_problem
+  |> List.fold_left ( + ) 0
+;;

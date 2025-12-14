@@ -106,7 +106,7 @@ let problem_testable =
 ;;
 
 let test_parse_problems () =
-  let actual = Aoc.parse_problems expected_matrix in
+  let actual = Aoc.parse_problems Aoc.Row expected_matrix in
   check
     (list problem_testable)
     "parses problems with horizontal numbers"
@@ -114,11 +114,30 @@ let test_parse_problems () =
     actual
 ;;
 
+let expected_parsed_problems_column_wise : Aoc.problem list =
+  [ [ 1; 24; 356 ], Aoc.Multiply
+  ; [ 369; 248; 8 ], Aoc.Add
+  ; [ 32; 581; 175 ], Aoc.Multiply
+  ; [ 623; 431; 4 ], Aoc.Add
+  ]
+;;
+
+let test_parse_problems_column_wise () =
+  let actual = Aoc.parse_problems Aoc.Column expected_matrix in
+  check
+    (list problem_testable)
+    "parses problems with vertical numbers"
+    expected_parsed_problems_column_wise
+    actual
+;;
+
 let test_part_one () =
   check int "example input" 4_277_556 (Aoc.solve_part_one example_input)
 ;;
 
-let test_part_two () = check int "solves part two" 0 (Aoc.solve_part_two "")
+let test_part_two () =
+  check int "solves part two" 3_263_827 (Aoc.solve_part_two example_input)
+;;
 
 let () =
   run
@@ -132,7 +151,8 @@ let () =
             "Split matrix with variable width columns"
             `Quick
             test_split_variable_width
-        ; test_case "Parse inputs" `Quick test_parse_problems
+        ; test_case "Parse inputs row-wise" `Quick test_parse_problems
+        ; test_case "Parse inputs column-wise" `Quick test_parse_problems_column_wise
         ] )
     ; "Part One", [ test_case "Solves example" `Quick test_part_one ]
     ; "Part Two", [ test_case "Example 1" `Quick test_part_two ]

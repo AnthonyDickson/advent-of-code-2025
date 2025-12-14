@@ -22,6 +22,7 @@ The "Solution Time" is the difference between the baseline and total times and g
 | 5 (1)      | λ Haskell |      2,178 µs |   6,570 µs |      4,392 µs |          9,564 |
 | 5 (Both)   | λ Haskell |      2,205 µs |   6,434 µs |      4,229 µs |          9,576 |
 | 6 (1)      | 🐫 OCaml  |      1,009 µs |   3,909 µs |      2,900 µs |          6,396 |
+| 6 (Both)   | 🐫 OCaml  |      1,015 µs |   5,384 µs |      4,369 µs |          6,792 |
 
 ## Usage
 

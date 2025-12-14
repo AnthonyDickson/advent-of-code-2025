@@ -6,7 +6,7 @@ build:
 	dune build
 
 run:
-	dune exec aoc -w
+	dune exec aoc
 
 test:
 	dune runtest -w
