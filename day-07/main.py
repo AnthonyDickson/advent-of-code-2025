@@ -7,7 +7,7 @@ def main():
 
     grid = parse(input)
     print(solve_part_one(grid))
-    print(solve_part_two(input))
+    print(solve_part_two(grid))
 
 
 class Cell(enum.Enum):
@@ -27,7 +27,8 @@ def print_grid(grid: Grid):
 
 
 def parse(input: str) -> Grid:
-    return [list(map(Cell, line)) for line in input.splitlines()]
+    # Every second line is empty and there can be skipped
+    return [list(map(Cell, line)) for line in input.splitlines()[0::2]]
 
 
 def solve_part_one(grid: Grid) -> int:
@@ -36,21 +37,17 @@ def solve_part_one(grid: Grid) -> int:
     for row, line in enumerate(grid):
         for col, cell in enumerate(line):
             match cell:
-                case Cell.Start:
-                    grid[row + 1][col] = Cell.Beam
-                case Cell.Splitter if row > 1 and grid[row - 1][col] == Cell.Beam:
-                    num_splits += 1
+                case Cell.Splitter if row > 0 and (grid[row - 1][col] == Cell.Beam or grid[row - 1][col] == Cell.Start):
                     grid[row][col - 1] = Cell.Beam
                     grid[row][col + 1] = Cell.Beam
-                case Cell.Empty if row > 1 and grid[row - 1][col] == Cell.Beam:
+                    num_splits += 1
+                case Cell.Empty if row > 0 and grid[row - 1][col] == Cell.Beam:
                     grid[row][col] = Cell.Beam
-
-    # print_grid(grid)
 
     return num_splits
 
 
-def solve_part_two(_input: str) -> int:
+def solve_part_two(_grid: Grid) -> int:
     return 0
 
 

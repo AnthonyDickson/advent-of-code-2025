@@ -30,21 +30,13 @@ class TestParse(TestCase):
         E, S, X = Cell.Empty, Cell.Start, Cell.Splitter
         expected = [
             [E, E, E, E, E, E, E, S, E, E, E, E, E, E, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
             [E, E, E, E, E, E, E, X, E, E, E, E, E, E, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
             [E, E, E, E, E, E, X, E, X, E, E, E, E, E, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
             [E, E, E, E, E, X, E, X, E, X, E, E, E, E, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
             [E, E, E, E, X, E, X, E, E, E, X, E, E, E, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
             [E, E, E, X, E, X, E, E, E, X, E, X, E, E, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
             [E, E, X, E, E, E, X, E, E, E, E, E, X, E, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
             [E, X, E, X, E, X, E, X, E, X, E, E, E, X, E],
-            [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
         ]
 
         input = get_example_input()
@@ -57,20 +49,19 @@ class TestParse(TestCase):
 
 class TestAoc(TestCase):
     def test_part_one(self):
-        input = get_example_input()
+        input = parse(get_example_input())
         expected = 21
 
-        actual = solve_part_one(parse(input))
+        actual = solve_part_one(input)
 
-        self.assertEqual(expected, actual, f"failed for input {input}")
+        self.assertEqual(expected, actual)
 
     def test_part_two(self):
-        input = ""
-        expected = 0
+        input = parse(get_example_input())
 
         actual = solve_part_two(input)
 
-        self.assertEqual(expected, actual, f"failed for input {input}")
+        self.assertEqual(expected, actual)
 
 
 if __name__ == "__main__":
