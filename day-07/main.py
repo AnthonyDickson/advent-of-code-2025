@@ -1,4 +1,5 @@
 import enum
+import functools
 
 
 def main():
@@ -47,8 +48,18 @@ def solve_part_one(grid: Grid) -> int:
     return num_splits
 
 
-def solve_part_two(_grid: Grid) -> int:
-    return 0
+def solve_part_two(grid: Grid) -> int:
+    @functools.cache
+    def count_leaves_depth_first(row: int, col: int) -> int:
+        if row == len(grid):
+            return 1
+
+        if grid[row][col] != Cell.Splitter:
+            return count_leaves_depth_first(row + 1, col)
+
+        return count_leaves_depth_first(row + 1, col - 1) + count_leaves_depth_first(row + 1, col + 1)
+
+    return count_leaves_depth_first(1, grid[1].index(Cell.Splitter))
 
 
 if __name__ == "__main__":

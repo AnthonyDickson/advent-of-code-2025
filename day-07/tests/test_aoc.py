@@ -58,6 +58,7 @@ class TestAoc(TestCase):
 
     def test_part_two(self):
         input = parse(get_example_input())
+        expected = 40
 
         actual = solve_part_two(input)
 
