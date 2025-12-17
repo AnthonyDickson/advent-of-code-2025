@@ -25,6 +25,7 @@ The "Solution Time" is the difference between the baseline and total times and g
 | 6 (Both)   | 🐫 OCaml  |      1,015 µs |   5,384 µs |      4,369 µs |          6,792 |
 | 7 (1)      | 🐍 Python |     12,452 µs |  16,901 µs |      4,449 µs |         12,372 |
 | 7 (Both)   | 🐍 Python |     12,539 µs |  18,105 µs |      5,566 µs |         12,116 |
+| 9 (1)      | ⭐ Gleam  |    114,900 µs | 185,400 µs |     70,500 µs |        122,504 |
 
 ## Usage
 
